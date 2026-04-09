@@ -2,7 +2,7 @@ import os
 from typing import Optional
 import httpx
 
-NTFY_BASE_URL = os.getenv("NTFY_URL", "https://ntfy.glitch42.com")
+NTFY_BASE_URL = os.getenv("NTFY_URL", "https://ntfy.sh")
 NTFY_TOKEN = os.getenv("NTFY_TOKEN", "")
 DEFAULT_TOPIC = os.getenv("NTFY_DEFAULT_TOPIC", "claudebox")
 
