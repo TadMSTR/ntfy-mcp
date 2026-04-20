@@ -4,6 +4,14 @@ All notable changes to ntfy-mcp are documented here.
 
 ## [Unreleased]
 
+## [0.1.2] — 2026-04-20
+
+### Fixed
+- Topic validation now uses a strict allowlist regex `^[a-zA-Z0-9_-]{1,64}$` instead of a contains-check. The previous guard was bypassable via URL-encoded characters (`%2F`, `%2E%2E`) that reverse proxies may decode before forwarding. Closes M1 from security audit.
+
+### Changed
+- Dockerfile now runs as non-root `appuser` (uid 1001) via `USER` instruction.
+
 ## [0.1.1] — 2026-04-20
 
 ### Fixed
