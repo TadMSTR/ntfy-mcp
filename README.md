@@ -7,6 +7,13 @@ MCP server for sending push notifications via [ntfy](https://ntfy.sh). One tool,
 
 I added this because every automated workflow on claudebox already uses ntfy for push notifications (memory pipeline completions, backup results, resource alerts), but agents had to go through a shell-access MCP or write raw curl to send them. This gives every Claude Code session a native `send_notification` tool call instead.
 
+```mermaid
+flowchart LR
+    A["Claude Code agent"] -->|"send_notification"| B["ntfy-mcp\n:8484"]
+    B -->|"HTTP POST"| C["ntfy server"]
+    C --> D["subscribers\nmobile · web · desktop"]
+```
+
 ## Tool
 
 ### `send_notification`
