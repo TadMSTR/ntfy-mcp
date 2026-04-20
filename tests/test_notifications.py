@@ -152,3 +152,19 @@ async def test_send_notification_invalid_priority():
     )
     assert result["ok"] is False
     assert "priority" in result["error"].lower()
+
+
+@pytest.mark.asyncio
+async def test_send_notification_rejects_path_traversal_topic():
+    result = await send_notification_handler(
+        message="test",
+        topic="../admin",
+        title=None,
+        priority=None,
+        tags=None,
+        markdown=False,
+        click=None,
+        icon=None,
+    )
+    assert result["ok"] is False
+    assert "Invalid topic" in result["error"]
