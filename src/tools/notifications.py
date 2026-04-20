@@ -1,6 +1,9 @@
 import os
+import re
 from typing import Optional
 import httpx
+
+_TOPIC_PATTERN = re.compile(r"^[a-zA-Z0-9_-]{1,64}$")
 
 
 def _clean(s: str) -> str:
@@ -65,8 +68,8 @@ async def send_notification_handler(
     icon: Optional[str],
 ) -> dict:
     resolved_topic = topic or DEFAULT_TOPIC
-    if "/" in resolved_topic or ".." in resolved_topic:
-        return {"ok": False, "error": "Invalid topic: must not contain '/' or '..'"}
+    if not _TOPIC_PATTERN.match(resolved_topic):
+        return {"ok": False, "error": "Invalid topic: must match [a-zA-Z0-9_-]{1,64}"}
     url = f"{NTFY_BASE_URL.rstrip('/')}/{resolved_topic}"
 
     try:
