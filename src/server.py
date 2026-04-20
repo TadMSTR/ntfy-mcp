@@ -1,17 +1,11 @@
 import os
-from contextlib import asynccontextmanager
 from typing import Optional
 
-from fastmcp import FastMCP, Context
+from fastmcp import FastMCP
 from src.tools.notifications import send_notification_handler
 
 
-@asynccontextmanager
-async def lifespan(app):
-    yield
-
-
-mcp = FastMCP("ntfy-mcp", lifespan=lifespan)
+mcp = FastMCP("ntfy-mcp")
 
 
 @mcp.tool()
@@ -24,7 +18,6 @@ async def send_notification(
     markdown: bool = False,
     click: Optional[str] = None,
     icon: Optional[str] = None,
-    ctx: Context = None,
 ) -> dict:
     """Send a push notification via ntfy.
 

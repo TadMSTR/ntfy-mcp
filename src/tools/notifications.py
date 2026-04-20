@@ -2,9 +2,15 @@ import os
 from typing import Optional
 import httpx
 
-NTFY_BASE_URL = os.getenv("NTFY_URL", "https://ntfy.sh")
-NTFY_TOKEN = os.getenv("NTFY_TOKEN", "")
-DEFAULT_TOPIC = os.getenv("NTFY_DEFAULT_TOPIC", "claudebox")
+
+def _clean(s: str) -> str:
+    """Strip newlines from header values to prevent injection."""
+    return s.replace("\r", "").replace("\n", " ")
+
+
+NTFY_BASE_URL = os.getenv("NTFY_URL") or "https://ntfy.sh"
+NTFY_TOKEN = os.getenv("NTFY_TOKEN") or ""
+DEFAULT_TOPIC = os.getenv("NTFY_DEFAULT_TOPIC") or "claudebox"
 
 VALID_PRIORITIES = {"min", "low", "default", "high", "urgent", "max", "1", "2", "3", "4", "5"}
 
@@ -23,7 +29,7 @@ def _build_headers(
         headers["Authorization"] = f"Bearer {NTFY_TOKEN}"
 
     if title:
-        headers["X-Title"] = title
+        headers["X-Title"] = _clean(title)
 
     if priority:
         p = priority.lower()
@@ -34,16 +40,16 @@ def _build_headers(
         headers["X-Priority"] = p
 
     if tags:
-        headers["X-Tags"] = ",".join(tags)
+        headers["X-Tags"] = ",".join(_clean(t) for t in tags)
 
     if markdown:
         headers["X-Markdown"] = "true"
 
     if click:
-        headers["X-Click"] = click
+        headers["X-Click"] = _clean(click)
 
     if icon:
-        headers["X-Icon"] = icon
+        headers["X-Icon"] = _clean(icon)
 
     return headers
 
@@ -59,6 +65,8 @@ async def send_notification_handler(
     icon: Optional[str],
 ) -> dict:
     resolved_topic = topic or DEFAULT_TOPIC
+    if "/" in resolved_topic or ".." in resolved_topic:
+        return {"ok": False, "error": "Invalid topic: must not contain '/' or '..'"}
     url = f"{NTFY_BASE_URL.rstrip('/')}/{resolved_topic}"
 
     try:
