@@ -168,3 +168,35 @@ async def test_send_notification_rejects_path_traversal_topic():
     )
     assert result["ok"] is False
     assert "Invalid topic" in result["error"]
+
+
+@pytest.mark.asyncio
+async def test_rejects_url_encoded_slash():
+    result = await send_notification_handler(
+        message="t",
+        topic="a%2Fb",
+        title=None,
+        priority=None,
+        tags=None,
+        markdown=False,
+        click=None,
+        icon=None,
+    )
+    assert result["ok"] is False
+    assert "Invalid topic" in result["error"]
+
+
+@pytest.mark.asyncio
+async def test_rejects_url_encoded_dotdot():
+    result = await send_notification_handler(
+        message="t",
+        topic="%2E%2E",
+        title=None,
+        priority=None,
+        tags=None,
+        markdown=False,
+        click=None,
+        icon=None,
+    )
+    assert result["ok"] is False
+    assert "Invalid topic" in result["error"]

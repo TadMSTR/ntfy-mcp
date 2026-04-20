@@ -9,4 +9,7 @@ COPY src/ ./src/
 
 EXPOSE 8484
 
+RUN useradd -r -s /bin/false -u 1001 appuser
+USER appuser
+
 CMD ["python", "-m", "src.server"]
